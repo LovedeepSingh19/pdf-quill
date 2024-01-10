@@ -4,6 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { db } from "@/db";
 import { z } from "zod";
 import { UTApi } from "uploadthing/server";
+import { UploadStatus } from "@prisma/client";
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
     const { getUser } = getKindeServerSession();
@@ -38,12 +39,20 @@ export const appRouter = router({
     });
   }),
 
+  getFileUploadStatus: privateProcedure.input(z.object({fileId: z.string()})).query(async ({ctx, input}) => {
+    const file = await db.file.findFirst({
+      where:{
+        userId: ctx.userId,
+        id: input.fileId
+      }
+    })
+    if(!file) return {status: UploadStatus.PROCESSING} 
+
+    return {status: file.uploadStatus}
+  }),
+
   deleteFile: privateProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      })
-    )
+    .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { userId } = ctx;
       const file = await db.file.findFirst({
@@ -63,22 +72,28 @@ export const appRouter = router({
         },
       });
 
-      await new UTApi().deleteFiles(file.key)
+      await new UTApi().deleteFiles(file.key);
 
       return file;
     }),
 
-    getFile: privateProcedure.input(z.object({key: z.string()})).mutation(async ({ctx, input}) => {
-      const {userId} = ctx
+  getFile: privateProcedure
+    .input(z.object({ key: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { userId } = ctx;
 
       const file = await db.file.findFirst({
         where: {
           key: input.key,
-          userId
-        }
-      })
-      if(!file){ throw new TRPCError({code: 'NOT_FOUND'})}else{return file}
-    })
+          userId,
+        },
+      });
+      if (!file) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      } else {
+        return file;
+      }
+    }),
 });
 
 export type AppRouter = typeof appRouter;
