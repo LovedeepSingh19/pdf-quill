@@ -5,6 +5,8 @@ import { db } from "@/db";
 import { z } from "zod";
 import { UTApi } from "uploadthing/server";
 import { UploadStatus } from "@prisma/client";
+import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query";
+
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
     const { getUser } = getKindeServerSession();
@@ -39,17 +41,68 @@ export const appRouter = router({
     });
   }),
 
-  getFileUploadStatus: privateProcedure.input(z.object({fileId: z.string()})).query(async ({ctx, input}) => {
-    const file = await db.file.findFirst({
-      where:{
-        userId: ctx.userId,
-        id: input.fileId
-      }
-    })
-    if(!file) return {status: UploadStatus.PROCESSING} 
+  getFileUploadStatus: privateProcedure
+    .input(z.object({ fileId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const file = await db.file.findFirst({
+        where: {
+          userId: ctx.userId,
+          id: input.fileId,
+        },
+      });
+      if (!file) return { status: UploadStatus.PROCESSING };
 
-    return {status: file.uploadStatus}
-  }),
+      return { status: file.uploadStatus };
+    }),
+
+  getFileMessages: privateProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).nullish(),
+        cursor: z.string().nullish(),
+        fileId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { userId } = ctx;
+      const { fileId, cursor } = input;
+      const limit = input.limit ?? INFINITE_QUERY_LIMIT;
+
+      const file = await db.file.findFirst({
+        where: {
+          id: fileId,
+          userId,
+        },
+      });
+
+      if (!file) throw new TRPCError({ code: "NOT_FOUND" });
+
+      const messages = await db.message.findMany({
+        take: limit + 1,
+        where: {
+          fileId,
+        },
+        orderBy: { createdAt: "desc" },
+        cursor: cursor ? { id: cursor } : undefined,
+        select: {
+          id: true,
+          isUserMessage: true,
+          createdAt: true,
+          text: true,
+        },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (messages.length > limit) {
+        const nextMessage = messages.pop();
+        nextCursor = nextMessage?.id;
+      }
+
+      return {
+        messages,
+        nextCursor,
+      };
+    }),
 
   deleteFile: privateProcedure
     .input(z.object({ id: z.string() }))

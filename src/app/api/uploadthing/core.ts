@@ -61,7 +61,7 @@ export const ourFileRouter = {
             id: createFile.id,
           },
         });
-        console.log(error)
+        console.log(error);
       }
     }),
 } satisfies FileRouter;
