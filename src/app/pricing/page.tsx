@@ -1,5 +1,5 @@
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
-import UpgadeButton from '@/components/UpgadeButton'
+import UpgradeButton from '@/components/UpgadeButton'
 import { buttonVariants } from '@/components/ui/button'
 import {
   Tooltip,
@@ -131,7 +131,10 @@ const Page = async () => {
                         {tagline}
                       </p>
                       <p className='my-5 font-display text-6xl font-semibold'>
-                        {price}₹
+                        {price} ₹
+                      </p>
+                      <p className='text-gray-500'>
+                        per month
                       </p>
                     </div>
 
@@ -220,7 +223,7 @@ const Page = async () => {
                           <ArrowRight className='h-5 w-5 ml-1.5' />
                         </Link>
                       ) : user ? (
-                        <UpgadeButton />
+                        <UpgradeButton />
                       ) : (
                         <Link
                           href='/sign-in'

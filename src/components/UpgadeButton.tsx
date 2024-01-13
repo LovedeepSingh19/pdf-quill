@@ -1,11 +1,22 @@
-import React from 'react';
+"use client"
 
-type UpgadeButtonProps = {
-    
-};
+import { ArrowRight } from 'lucide-react'
+import { Button } from './ui/button'
+import { trpc } from '@/app/_trpc/client'
 
-const UpgadeButton:React.FC<UpgadeButtonProps> = () => {
-    
-    return <div>Have a good coding</div>
+const UpgradeButton = () => {
+
+  const {mutate: createStripeSession} = trpc.createStripeSession.useMutation({
+    onSuccess: ({url}) => {
+      window.location.href = url ?? "/dashboard/billing"
+    }
+  })
+
+  return (
+    <Button onClick={() => createStripeSession()} className='w-full'>
+      Upgrade now <ArrowRight className='h-5 w-5 ml-1.5' />
+    </Button>
+  )
 }
-export default UpgadeButton;
+
+export default UpgradeButton
