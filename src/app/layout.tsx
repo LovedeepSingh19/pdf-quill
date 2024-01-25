@@ -11,7 +11,7 @@ import "simplebar-react/dist/simplebar.min.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = constructMetadata()
+// export const metadata: Metadata = constructMetadata()
 
 export default function RootLayout({
   children,
