@@ -1,5 +1,5 @@
 import { db } from '@/db'
-import { openai } from '@/lib/openai'
+import { openai } from '../../../lib/openai'
 import { getPineconeClient } from '@/lib/pinecone'
 import { SendMessageValidator } from '@/lib/validators/SendMessageValidator'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
