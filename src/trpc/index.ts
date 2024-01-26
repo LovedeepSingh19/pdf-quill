@@ -8,8 +8,7 @@ import { TRPCError } from '@trpc/server'
 import { db } from '@/db'
 import { z } from 'zod'
 import { INFINITE_QUERY_LIMIT } from '@/config/infinite-query'
-import {absoluteURL} from '../lib/utils'
-
+import { absoluteUrl } from '@/lib/utils'
 import {
   getUserSubscriptionPlan,
   stripe,
@@ -19,9 +18,9 @@ import { PLANS } from '@/config/stripe'
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
     const { getUser } = getKindeServerSession()
-    const user = await getUser()
+    const user = getUser()
 
-    if (!user?.id || !user?.email)
+    if (!user.id || !user.email)
       throw new TRPCError({ code: 'UNAUTHORIZED' })
 
     // check if the user is in the database
@@ -43,7 +42,7 @@ export const appRouter = router({
 
     return { success: true }
   }),
-  getUserFile: privateProcedure.query(async ({ ctx }) => {
+  getUserFiles: privateProcedure.query(async ({ ctx }) => {
     const { userId } = ctx
 
     return await db.file.findMany({
@@ -57,7 +56,7 @@ export const appRouter = router({
     async ({ ctx }) => {
       const { userId } = ctx
 
-      const billingUrl = absoluteURL('/dashboard/billing')
+      const billingUrl = absoluteUrl('/dashboard/billing')
 
       if (!userId)
         throw new TRPCError({ code: 'UNAUTHORIZED' })

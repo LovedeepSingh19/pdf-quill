@@ -5,7 +5,7 @@ import Skeleton from 'react-loading-skeleton'
 import Message from './Message'
 import { useContext, useEffect, useRef } from 'react'
 import { ChatContext } from './ChatContext'
-import {useIntersection} from "@mantine/hooks"
+import { useIntersection } from '@mantine/hooks'
 
 interface MessagesProps {
   fileId: string

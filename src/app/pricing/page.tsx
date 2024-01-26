@@ -1,5 +1,5 @@
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
-import UpgradeButton from '@/components/UpgadeButton'
+import UpgradeButton from '@/components/UpgradeButton'
 import { buttonVariants } from '@/components/ui/button'
 import {
   Tooltip,
@@ -18,9 +18,9 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
-const Page = async () => {
+const Page = () => {
   const { getUser } = getKindeServerSession()
-  const user = await getUser()
+  const user = getUser()
 
   const pricingItems = [
     {
@@ -131,7 +131,7 @@ const Page = async () => {
                         {tagline}
                       </p>
                       <p className='my-5 font-display text-6xl font-semibold'>
-                        {price} ₹
+                        ${price}
                       </p>
                       <p className='text-gray-500'>
                         per month

@@ -1,9 +1,9 @@
 import { cn } from '@/lib/utils'
 import { ExtendedMessage } from '@/types/message'
+import { Icons } from '../Icons'
+import ReactMarkdown from 'react-markdown'
 import { format } from 'date-fns'
 import { forwardRef } from 'react'
-import { Icons } from '../ui/Icons'
-import ReactMarkdown from "react-markdown"
 
 interface MessageProps {
   message: ExtendedMessage
