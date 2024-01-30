@@ -77,7 +77,7 @@ const UserAccountNav = async ({
 
         <DropdownMenuItem asChild>
           {subscriptionPlan?.isSubscribed ? (
-            <Link href='/dashboard/billing'>
+            <Link href='/pricing'>
               Manage Subscription
             </Link>
           ) : (
